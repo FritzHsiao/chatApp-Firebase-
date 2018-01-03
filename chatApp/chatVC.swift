@@ -4,6 +4,7 @@ import Firebase
 class chatVC: UITableViewController {
     
     var messages = [Message]()
+    var messageDictionary = [String: Message]()
     
 //    let timeLable: UILabel = {
 //        let lable = UILabel()
@@ -25,8 +26,16 @@ class chatVC: UITableViewController {
         ref.observe(.childAdded, with: { (snapshot) in
             if let dictionary = snapshot.value as? [String: Any] {
                 let message = Message(dictionary: dictionary)
-                self.messages.append(message)
-                print(self.messages)
+//                self.messages.append(message)
+                if let toId = message.toId {
+                    self.messageDictionary[toId] = message
+                    self.messages = Array(self.messageDictionary.values)
+                    self.messages.sort(by: { (message1, message2) -> Bool in
+                        return message1.timestamp!.intValue > message2.timestamp!.intValue
+                    })
+                }
+                
+
             }
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -99,7 +108,10 @@ class chatVC: UITableViewController {
         timeLable.widthAnchor.constraint(equalToConstant: 100).isActive = true
         timeLable.heightAnchor.constraint(equalTo: (cell?.textLabel?.heightAnchor)!).isActive = true
         timeLable.backgroundColor = UIColor.red
-        timeLable.text = "dddd"
+        let time = Date(timeIntervalSince1970: message.timestamp as! TimeInterval)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "hh:mm:ss a"
+        timeLable.text = formatter.string(from: time)
         
         cell?.detailTextLabel?.text = message.text
         return cell!
