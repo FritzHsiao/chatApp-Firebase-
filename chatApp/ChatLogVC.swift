@@ -1,91 +1,82 @@
 import UIKit
+import Firebase
 
-class ChatLogVC: UITableViewController {
+class ChatLogVC: UICollectionViewController, UITextFieldDelegate{
+    
+    var user: User? {
+        didSet {
+            navigationItem.title = user?.name
+            
+        }
+    }
+    
+    
+    lazy var inputTextfield: UITextField = {
+        let Textfield = UITextField()
+        Textfield.placeholder = "Enter message..."
+        Textfield.translatesAutoresizingMaskIntoConstraints = false
+        Textfield.delegate = self
+        return Textfield
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        collectionView?.backgroundColor = UIColor.white
         setupInputsComponents()
 
     }
     
     func setupInputsComponents() {
         let containerview = UIView()
-        containerview.backgroundColor = UIColor.red
+        containerview.translatesAutoresizingMaskIntoConstraints = false
         
+        view.addSubview(containerview)
         
+        containerview.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        containerview.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        containerview.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        containerview.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        let sendBut = UIButton(type: .system)
+        sendBut.setTitle("Send", for: .normal)
+        sendBut.translatesAutoresizingMaskIntoConstraints = false
+        sendBut.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
+        containerview.addSubview(sendBut)
+        sendBut.rightAnchor.constraint(equalTo: containerview.rightAnchor).isActive = true
+        sendBut.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        sendBut.heightAnchor.constraint(equalTo: containerview.heightAnchor).isActive = true
+        sendBut.centerYAnchor.constraint(equalTo: containerview.centerYAnchor).isActive = true
+        
+
+        containerview.addSubview(inputTextfield)
+        inputTextfield.leftAnchor.constraint(equalTo: containerview.leftAnchor, constant: 8).isActive = true
+        inputTextfield.centerYAnchor.constraint(equalTo: containerview.centerYAnchor).isActive = true
+        inputTextfield.rightAnchor.constraint(equalTo: sendBut.leftAnchor).isActive = true
+        inputTextfield.heightAnchor.constraint(equalTo: containerview.heightAnchor).isActive = true
+        
+        let separatorLine = UIView()
+        separatorLine.backgroundColor = UIColor.gray
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        containerview.addSubview(separatorLine)
+        separatorLine.leftAnchor.constraint(equalTo: containerview.leftAnchor).isActive = true
+        separatorLine.topAnchor.constraint(equalTo: containerview.topAnchor).isActive = true
+        separatorLine.widthAnchor.constraint(equalTo: containerview.widthAnchor).isActive = true
+        separatorLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    @objc func handleSend() {
+        let ref = Database.database().reference().child("messages")
+        let childRef = ref.childByAutoId()
+        let toId = user?.id
+        let fromId = Auth.auth().currentUser?.uid
+        let timestamp = Int(Date().timeIntervalSince1970)
+        let values = ["text": inputTextfield.text!, "toId": toId!, "fromId": fromId, "timestamp": timestamp] as [String : Any]
+        childRef.updateChildValues(values)
     }
-
-    // MARK: - Table view data source
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
-    }
-
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
-        return cell
-    }
-    */
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        handleSend()
         return true
     }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

@@ -13,12 +13,12 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        LoginRegisterSeg.selectedSegmentIndex = 0
+        setButtom()
     }
     
     @IBAction func LoginRegister(_ sender: Any) {
         setButtom()
-        
     }
     
     func setButtom() {

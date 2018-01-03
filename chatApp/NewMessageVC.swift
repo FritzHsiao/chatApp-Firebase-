@@ -37,6 +37,15 @@ class NewMessageVC: UITableViewController {
         return users.count
     }
     
+    var chatvc: chatVC?
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        dismiss(animated: true) {
+            let user = self.users[indexPath.row]
+            self.chatvc?.showchatVCforUser(user: user)
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellid = "cell"
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: cellid)
