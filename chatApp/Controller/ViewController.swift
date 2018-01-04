@@ -21,6 +21,10 @@ class ViewController: UIViewController {
         setButtom()
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
     func setButtom() {
         let selectedIndex = LoginRegisterSeg.selectedSegmentIndex
         if selectedIndex == 0 {
