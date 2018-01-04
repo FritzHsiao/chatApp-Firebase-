@@ -6,12 +6,12 @@ class chatVC: UITableViewController {
     var messages = [Message]()
     var messageDictionary = [String: Message]()
     
-    //    let timeLable: UILabel = {
-    //        let lable = UILabel()
-    //        lable.text = "hhhh"
-    //        lable.translatesAutoresizingMaskIntoConstraints = false
-    //        return lable
-    //    }()
+//    let timeLable: UILabel = {
+//        let lable = UILabel()
+//        lable.text = "hhhh"
+//        lable.translatesAutoresizingMaskIntoConstraints = false
+//        return lable
+//    }()
     
     
     override func viewDidLoad() {
@@ -145,19 +145,19 @@ class chatVC: UITableViewController {
             }, withCancel: nil)
         }
         
-        //        let timeLable = UILabel()
-        //        timeLable.translatesAutoresizingMaskIntoConstraints = true
-        //
-        //        cell?.contentView.addSubview(timeLable)
-        //        timeLable.rightAnchor.constraint(equalTo: (cell?.rightAnchor)!).isActive = true
-        //        timeLable.topAnchor.constraint(equalTo: (cell?.topAnchor)!).isActive = true
-        //        timeLable.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        //        timeLable.heightAnchor.constraint(equalTo: (cell?.textLabel?.heightAnchor)!).isActive = true
-        //        timeLable.backgroundColor = UIColor.red
-        //        let time = Date(timeIntervalSince1970: message.timestamp as! TimeInterval)
-        //        let formatter = DateFormatter()
-        //        formatter.dateFormat = "hh:mm:ss a"
-        //        timeLable.text = formatter.string(from: time)
+//        let timeLable = UILabel()
+//        timeLable.translatesAutoresizingMaskIntoConstraints = true
+//
+//        cell?.contentView.addSubview(timeLable)
+//        timeLable.rightAnchor.constraint(equalTo: (cell?.rightAnchor)!).isActive = true
+//        timeLable.topAnchor.constraint(equalTo: (cell?.topAnchor)!).isActive = true
+//        timeLable.widthAnchor.constraint(equalToConstant: 100).isActive = true
+//        timeLable.heightAnchor.constraint(equalTo: (cell?.textLabel?.heightAnchor)!).isActive = true
+//        timeLable.backgroundColor = UIColor.red
+//        let time = Date(timeIntervalSince1970: message.timestamp as! TimeInterval)
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "hh:mm:ss a"
+//        timeLable.text = formatter.string(from: time)
         
         cell?.detailTextLabel?.text = message.text
         return cell!

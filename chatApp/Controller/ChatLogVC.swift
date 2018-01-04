@@ -95,7 +95,7 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
         
         setupCell(cell: cell, message: message)
         
-//        cell.bubbleWidthAnchor?.constant = estimateFrameforText(text: message.text!).width + 200
+        cell.bubbleWidthAnchor?.constant = estimateFrameforText(text: message.text!).width + 30
         
         return cell
     }
