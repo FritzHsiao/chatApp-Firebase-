@@ -56,11 +56,8 @@ class ViewController: UIViewController {
             if error != nil {
                 print(error!)
                 return
-            }
-            
+            }            
             self.dismiss(animated: true, completion: nil)
-            
-            
         }
         
     }

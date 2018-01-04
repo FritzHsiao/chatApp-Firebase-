@@ -12,10 +12,10 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
     var messages = [Message]()
     
     func observeMessages() {
-        guard let uid = Auth.auth().currentUser?.uid else {
+        guard let uid = Auth.auth().currentUser?.uid, let toId = user?.id else {
             return
         }
-        let UserMessagesRef = Database.database().reference().child("user-message").child(uid)
+        let UserMessagesRef = Database.database().reference().child("user-message").child(uid).child(toId)
         UserMessagesRef.observe(.childAdded, with: { (snapshot) in
             
             let messageId = snapshot.key
@@ -184,7 +184,6 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
         let fromId = Auth.auth().currentUser!.uid
         let timestamp = Int(Date().timeIntervalSince1970)
         let values = ["text": inputTextfield.text!, "toId": toId!, "fromId": fromId, "timestamp": timestamp] as [String : Any]
-//        childRef.updateChildValues(values)
         
         childRef.updateChildValues(values) { (error, ref) in
             if error != nil {
@@ -193,11 +192,11 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
             }
             self.inputTextfield.text = nil
             
-            let userMessageRef = Database.database().reference().child("user-message").child(fromId)
+            let userMessageRef = Database.database().reference().child("user-message").child(fromId).child(toId!)
             let messageId = childRef.key
             userMessageRef.updateChildValues([messageId: 1])
             
-            let recipientUserMessagesRef = Database.database().reference().child("user-message").child(toId!)
+            let recipientUserMessagesRef = Database.database().reference().child("user-message").child(toId!).child(fromId)
             recipientUserMessagesRef.updateChildValues([messageId: 1])
         }
     }
