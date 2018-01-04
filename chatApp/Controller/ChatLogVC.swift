@@ -26,13 +26,10 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
                     return
                 }
                 let message = Message(dictionary: dictionary)
-                
-                if message.chatPartnerId() == self.user?.id {
-                    self.messages.append(message)
-                    DispatchQueue.main.async {
-                        self.collectionView?.reloadData()
+                self.messages.append(message)
+                DispatchQueue.main.async {
+                    self.collectionView?.reloadData()
                     }
-                }
             }, withCancel: nil)
         }, withCancel: nil)
     }
