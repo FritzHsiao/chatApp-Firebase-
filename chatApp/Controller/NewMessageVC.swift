@@ -22,14 +22,10 @@ class NewMessageVC: UITableViewController {
                 let user = User(dictionary: dictionary)
                 user.id = snapshot.key
                 self.users.append(user)
-//                print(user.name)
                 DispatchQueue.main.async(execute: {
                     self.tableView.reloadData()
                 })
-                
-                //                user.name = dictionary["name"]
             }
-//           print(snapshot)
         }, withCancel: nil)
     }
     
