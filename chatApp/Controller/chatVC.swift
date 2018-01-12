@@ -6,14 +6,13 @@ class chatVC: UITableViewController {
     var messages = [Message]()
     var messageDictionary = [String: Message]()
     
-//    let timeLable: UILabel = {
-//        let lable = UILabel()
-//        lable.text = "hhhh"
-//        lable.translatesAutoresizingMaskIntoConstraints = false
-//        return lable
-//    }()
-    
-    
+    let timeLable: UILabel = {
+        let lable = UILabel()
+        lable.text = "hhhh"
+        lable.translatesAutoresizingMaskIntoConstraints = false
+        return lable
+    }()
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         messages.removeAll()
@@ -23,14 +22,54 @@ class chatVC: UITableViewController {
         observeUserMessages()
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Message", style: .plain, target: self, action: #selector(handleNewMessage))
+        tableView.allowsMultipleSelectionDuringEditing = true
         
+    }
+    
+    func addTimeLableInCell() {
+        
+        //        let timeLable = UILabel()
+        //        timeLable.translatesAutoresizingMaskIntoConstraints = true
+        //
+        //        cell?.contentView.addSubview(timeLable)
+        //        timeLable.rightAnchor.constraint(equalTo: (cell?.rightAnchor)!).isActive = true
+        //        timeLable.topAnchor.constraint(equalTo: (cell?.topAnchor)!).isActive = true
+        //        timeLable.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        //        timeLable.heightAnchor.constraint(equalTo: (cell?.textLabel?.heightAnchor)!).isActive = true
+        //        timeLable.backgroundColor = UIColor.red
+        //        let time = Date(timeIntervalSince1970: message.timestamp as! TimeInterval)
+        //        let formatter = DateFormatter()
+        //        formatter.dateFormat = "hh:mm:ss a"
+        //        timeLable.text = formatter.string(from: time)
+        
+    }
+
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        let message = messages[indexPath.row]
+        if let chatpartnerId = message.chatPartnerId() {
+            Database.database().reference().child("user-message").child(uid).child(chatpartnerId).removeValue(completionBlock: { (error, ref) in
+                if error != nil {
+                    print("fail to delete message")
+                    return
+                }
+                self.messageDictionary.removeValue(forKey: chatpartnerId)
+                self.attemptReloadOftable()
+            })
+        }
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
         messages.removeAll()
         messageDictionary.removeAll()
         tableView.reloadData()
-        
         observeUserMessages()
     }
     
@@ -60,6 +99,12 @@ class chatVC: UITableViewController {
             }, withCancel: nil)
             
         }, withCancel: nil)
+        
+        ref.observe(.childRemoved, with: { (snapshot) in
+            self.messageDictionary.removeValue(forKey: snapshot.key)
+            self.attemptReloadOftable()
+        }, withCancel: nil)
+        
     }
     
     private func attemptReloadOftable() {
@@ -128,7 +173,7 @@ class chatVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellId = "chatVCcell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellId)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId) as! Usercell
         let message = messages[indexPath.row]
         let chatPartnerId: String?
         if message.fromId == Auth.auth().currentUser?.uid {
@@ -140,27 +185,26 @@ class chatVC: UITableViewController {
             let ref = Database.database().reference().child("users").child(Id)
             ref.observe(.value, with: { (snapshot) in
                 if let dictionary = snapshot.value as? [String: Any] {
-                    cell?.textLabel?.text = dictionary["name"] as? String
+                    cell.textLabel?.text = dictionary["name"] as? String
                 }
             }, withCancel: nil)
         }
         
-//        let timeLable = UILabel()
-//        timeLable.translatesAutoresizingMaskIntoConstraints = true
-//
-//        cell?.contentView.addSubview(timeLable)
-//        timeLable.rightAnchor.constraint(equalTo: (cell?.rightAnchor)!).isActive = true
-//        timeLable.topAnchor.constraint(equalTo: (cell?.topAnchor)!).isActive = true
-//        timeLable.widthAnchor.constraint(equalToConstant: 100).isActive = true
-//        timeLable.heightAnchor.constraint(equalTo: (cell?.textLabel?.heightAnchor)!).isActive = true
-//        timeLable.backgroundColor = UIColor.red
-//        let time = Date(timeIntervalSince1970: message.timestamp as! TimeInterval)
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "hh:mm:ss a"
-//        timeLable.text = formatter.string(from: time)
+        if let seconds = message.timestamp?.doubleValue {
+            let timestampDate = Date(timeIntervalSince1970: seconds)
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "hh:mm:ss a"
+            cell.timeLable.text = formatter.string(from: timestampDate)
+        }
+
         
-        cell?.detailTextLabel?.text = message.text
-        return cell!
+        if message.imageUrl != nil {
+            cell.detailTextLabel?.text = "send photo"
+        } else {
+            cell.detailTextLabel?.text = message.text
+        }
+        return cell
         
     }
     

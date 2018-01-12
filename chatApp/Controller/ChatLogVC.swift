@@ -66,15 +66,14 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
     }
     
     func setupkeyboardObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handlekeyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(handlekeyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlekeyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlekeyboardDidShow), name: NSNotification.Name.UIKeyboardDidShow, object: nil)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(true)
-        
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -154,7 +153,7 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var height: CGFloat = 80
+        var height: CGFloat?
         let message = messages[indexPath.item]
         if let text = message.text {
             height = estimateFrameforText(text: text).height + 20
@@ -162,7 +161,7 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
             height = CGFloat(imageHeight / imageWidth * 200)
             
         }
-        return CGSize(width: view.frame.width, height: height)
+        return CGSize(width: view.frame.width, height: height!)
     }
     
     private func estimateFrameforText(text: String) -> CGRect {
@@ -299,9 +298,7 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
     private func thumbnailImageForFileUrl(fileurl: URL) -> UIImage? {
         let asset = AVAsset(url: fileurl)
         let imageGenerator = AVAssetImageGenerator(asset: asset)
-        
-        do {
-            
+        do {            
             let thumbnailCGImage = try imageGenerator.copyCGImage(at: CMTimeMake(1, 60), actualTime: nil)
             return UIImage(cgImage: thumbnailCGImage)
             
@@ -447,7 +444,6 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
             zoomOutImageView.layer.cornerRadius = 16
             zoomOutImageView.clipsToBounds = true
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                
                 zoomOutImageView.frame = self.startingFrame!
                 self.blackBackgroundView?.alpha = 0
             }, completion: { (completed: Bool) in

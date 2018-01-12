@@ -15,7 +15,6 @@ class ChatMessageCell: UICollectionViewCell {
     
     let textView: UITextView = {
        let tv = UITextView()
-        tv.text = "Hiiiiiii"
         tv.font = UIFont.boldSystemFont(ofSize: 16)
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.backgroundColor = UIColor.clear
@@ -45,8 +44,6 @@ class ChatMessageCell: UICollectionViewCell {
             player?.play()
             activityIndicatorView.startAnimating()
             playButton.isHidden = true
-            print("attempting to play...........")
-
         }
     }
     
