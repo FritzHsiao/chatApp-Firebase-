@@ -144,6 +144,7 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
         
         if let messageImageUrl = message.imageUrl {
             cell.messageImageView.loadImageWithUrl(urlString: messageImageUrl)
+//            cell.messageImageView.transform.rotated(by: CGFloat.pi / 2)
             cell.messageImageView.isHidden = false
             cell.bubbleView.backgroundColor = UIColor.clear
         } else {
@@ -153,7 +154,7 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var height: CGFloat?
+        var height: CGFloat = 80
         let message = messages[indexPath.item]
         if let text = message.text {
             height = estimateFrameforText(text: text).height + 20
@@ -161,7 +162,8 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
             height = CGFloat(imageHeight / imageWidth * 200)
             
         }
-        return CGSize(width: view.frame.width, height: height!)
+        let width = UIScreen.main.bounds.width
+        return CGSize(width: width, height: height)
     }
     
     private func estimateFrameforText(text: String) -> CGRect {
@@ -414,6 +416,7 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
     func performZoomInForStartingImageView(startingImageView: UIImageView) {
         self.startingImageView = startingImageView
         self.startingImageView?.isHidden = true
+        
         startingFrame = startingImageView.superview?.convert(startingImageView.frame, to: nil)
         let zoomingImageView = UIImageView(frame: startingFrame!)
         zoomingImageView.image = startingImageView.image
@@ -424,13 +427,15 @@ class ChatLogVC: UICollectionViewController, UITextFieldDelegate, UICollectionVi
             blackBackgroundView = UIView(frame: keywindow.frame)
             blackBackgroundView?.backgroundColor = UIColor.black
             blackBackgroundView?.alpha = 0
+            
             keywindow.addSubview(blackBackgroundView!)
             keywindow.addSubview(zoomingImageView)
             
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
                 self.blackBackgroundView?.alpha = 1
-                self.inputTextfield.alpha = 1
-                let height = (self.startingFrame?.height)! / (self.startingFrame?.width)! * keywindow.frame.height
+                self.inputTextfield.alpha = 0
+                
+                let height = self.startingFrame!.height / self.startingFrame!.width * keywindow.frame.width
                 zoomingImageView.frame = CGRect(x: 0, y: 0, width: keywindow.frame.width, height: height)
                 zoomingImageView.center = keywindow.center
             }, completion: { (completed: Bool) in

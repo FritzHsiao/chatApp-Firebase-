@@ -181,6 +181,7 @@ class chatVC: UITableViewController {
         } else {
             chatPartnerId = message.fromId
         }
+        
         if let Id = chatPartnerId {
             let ref = Database.database().reference().child("users").child(Id)
             ref.observe(.value, with: { (snapshot) in
@@ -192,13 +193,11 @@ class chatVC: UITableViewController {
         
         if let seconds = message.timestamp?.doubleValue {
             let timestampDate = Date(timeIntervalSince1970: seconds)
-            
             let formatter = DateFormatter()
             formatter.dateFormat = "hh:mm:ss a"
             cell.timeLable.text = formatter.string(from: timestampDate)
         }
 
-        
         if message.imageUrl != nil {
             cell.detailTextLabel?.text = "send photo"
         } else {
